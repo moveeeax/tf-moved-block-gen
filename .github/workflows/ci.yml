@@ -1,0 +1,73 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.22', '1.23', '1.24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "not gofmt'd:"; echo "$unformatted"; exit 1
+          fi
+      - run: go vet ./...
+      - run: go build ./...
+      - run: go test ./... -race -count=1
+
+  cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - run: go build -o tf-moved-block-gen ./cmd/tf-moved-block-gen
+
+      - name: example plan produces the committed moved blocks
+        run: |
+          ./tf-moved-block-gen --plan examples/plan.json > /tmp/moved.tf
+          diff -u examples/moved.tf /tmp/moved.tf
+
+      - name: unexplained destroy fails the gate
+        run: |
+          set +e
+          ./tf-moved-block-gen --plan examples/plan.json --fail-on-unexplained >/dev/null
+          code=$?
+          set -e
+          test "$code" -eq 1 || { echo "expected exit 1, got $code"; exit 1; }
+
+      - name: ignoring the real destroy clears the gate
+        run: |
+          ./tf-moved-block-gen --plan examples/plan.json --fail-on-unexplained \
+            --ignore 'aws_s3_bucket.*' >/dev/null
+
+      - name: a broken plan exits 2
+        run: |
+          set +e
+          echo '{not json' | ./tf-moved-block-gen >/dev/null 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 2 || { echo "expected exit 2, got $code"; exit 1; }
+
+      - name: output is byte-stable
+        run: |
+          ./tf-moved-block-gen --plan examples/plan.json > /tmp/a.tf
+          ./tf-moved-block-gen --plan examples/plan.json > /tmp/b.tf
+          cmp /tmp/a.tf /tmp/b.tf

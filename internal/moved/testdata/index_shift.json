@@ -1,0 +1,61 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_security_group_rule.allow[1]",
+      "mode": "managed",
+      "type": "aws_security_group_rule",
+      "name": "allow",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "index": 1,
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "before": {
+          "type": "ingress",
+          "from_port": 5432,
+          "to_port": 5432,
+          "protocol": "tcp",
+          "security_group_id": "sg-0123456789abcdef0",
+          "cidr_blocks": [
+            "10.0.0.0/8"
+          ],
+          "description": "postgres from the vpc",
+          "id": "sgrule-1192837465"
+        },
+        "after": null,
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_security_group_rule.allow[2]",
+      "mode": "managed",
+      "type": "aws_security_group_rule",
+      "name": "allow",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "index": 2,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "type": "ingress",
+          "from_port": 5432,
+          "to_port": 5432,
+          "protocol": "tcp",
+          "security_group_id": "sg-0123456789abcdef0",
+          "cidr_blocks": [
+            "10.0.0.0/8"
+          ],
+          "description": "postgres from the vpc"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    }
+  ]
+}

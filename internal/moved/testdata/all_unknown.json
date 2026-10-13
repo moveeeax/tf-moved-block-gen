@@ -1,0 +1,62 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_instance.web",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "web",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "before": {
+          "ami": "ami-0abcdef1234567890",
+          "instance_type": "t3.micro",
+          "subnet_id": "subnet-0123456789abcdef0",
+          "monitoring": false,
+          "tags": {
+            "Name": "web",
+            "Env": "prod"
+          },
+          "id": "i-0c9f1a2b3c4d5e6f7",
+          "arn": "arn:aws:ec2:eu-central-1:111122223333:instance/i-0c9f1a2b3c4d5e6f7",
+          "private_ip": "10.0.1.17"
+        },
+        "after": null,
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_instance.api",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": null,
+          "instance_type": null,
+          "subnet_id": null,
+          "monitoring": null,
+          "tags": null
+        },
+        "after_unknown": {
+          "ami": true,
+          "instance_type": true,
+          "subnet_id": true,
+          "monitoring": true,
+          "tags": true,
+          "id": true,
+          "arn": true
+        }
+      }
+    }
+  ]
+}

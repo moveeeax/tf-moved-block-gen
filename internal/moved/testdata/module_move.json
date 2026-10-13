@@ -1,0 +1,79 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "module.app.aws_security_group.lb",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "lb",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "module_address": "module.app",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "before": {
+          "name": "lb",
+          "description": "load balancer ingress",
+          "vpc_id": "vpc-0a1b2c3d4e5f60718",
+          "ingress": [
+            {
+              "from_port": 443,
+              "to_port": 443,
+              "protocol": "tcp",
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ]
+            }
+          ],
+          "tags": {
+            "Name": "lb"
+          },
+          "id": "sg-0123456789abcdef0",
+          "arn": "arn:aws:ec2:eu-central-1:111122223333:security-group/sg-0123456789abcdef0",
+          "owner_id": "111122223333"
+        },
+        "after": null,
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "module.edge.aws_security_group.lb",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "lb",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "module_address": "module.edge",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "lb",
+          "description": "load balancer ingress",
+          "vpc_id": "vpc-0a1b2c3d4e5f60718",
+          "ingress": [
+            {
+              "from_port": 443,
+              "to_port": 443,
+              "protocol": "tcp",
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ]
+            }
+          ],
+          "tags": {
+            "Name": "lb"
+          }
+        },
+        "after_unknown": {
+          "id": true,
+          "arn": true,
+          "owner_id": true
+        }
+      }
+    }
+  ]
+}

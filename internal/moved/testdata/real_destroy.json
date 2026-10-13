@@ -1,0 +1,56 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.legacy_logs",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "legacy_logs",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "before": {
+          "bucket": "acme-legacy-logs",
+          "force_destroy": false,
+          "id": "acme-legacy-logs",
+          "arn": "arn:aws:s3:::acme-legacy-logs",
+          "tags": {
+            "Name": "legacy-logs"
+          }
+        },
+        "after": null,
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_instance.worker",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "worker",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-0abcdef1234567890",
+          "instance_type": "t3.micro",
+          "subnet_id": "subnet-0123456789abcdef0",
+          "monitoring": false,
+          "tags": {
+            "Name": "worker"
+          }
+        },
+        "after_unknown": {
+          "id": true,
+          "arn": true,
+          "private_ip": true
+        }
+      }
+    }
+  ]
+}

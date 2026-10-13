@@ -1,0 +1,56 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.primary",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "primary",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "before": {
+          "identifier": "prod-primary",
+          "engine": "postgres",
+          "engine_version": "15.4",
+          "instance_class": "db.r6g.large",
+          "allocated_storage": 512,
+          "multi_az": true,
+          "id": "prod-primary",
+          "arn": "arn:aws:rds:eu-central-1:111122223333:db:prod-primary"
+        },
+        "after": null,
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_db_instance.analytics",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "analytics",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "identifier": "analytics-ro",
+          "engine": "mysql",
+          "engine_version": "8.0.35",
+          "instance_class": "db.t4g.small",
+          "allocated_storage": 20,
+          "multi_az": false
+        },
+        "after_unknown": {
+          "id": true,
+          "arn": true,
+          "endpoint": true
+        }
+      }
+    }
+  ]
+}
