@@ -15,10 +15,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: ['1.22', '1.23', '1.24']
+        go: ['1.26', '1.27']
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go }}
       - name: gofmt
@@ -34,10 +34,10 @@ jobs:
   cli:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
-          go-version: '1.23'
+          go-version: '1.27'
       - run: go build -o tf-moved-block-gen ./cmd/tf-moved-block-gen
 
       - name: example plan produces the committed moved blocks
