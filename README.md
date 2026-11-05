@@ -1,7 +1,7 @@
 # tf-moved-block-gen
 
 [![ci](https://github.com/moveeeax/tf-moved-block-gen/actions/workflows/ci.yml/badge.svg)](https://github.com/moveeeax/tf-moved-block-gen/actions/workflows/ci.yml)
-[![go](https://img.shields.io/badge/go-1.22%2B-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![go](https://img.shields.io/badge/go-1.26%2B-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Renaming a Terraform resource is a destroy and a create, and Terraform will not
@@ -12,7 +12,7 @@ back into a rename.
 It also answers the other half of the question: which destroys are *not*
 renames. `--fail-on-unexplained` turns that into a CI gate.
 
-Go 1.22+, standard library only. No Terraform binary needed, no provider
+Go 1.26+, standard library only. No Terraform binary needed, no provider
 credentials, no network.
 
 ## Install
