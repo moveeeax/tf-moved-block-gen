@@ -31,6 +31,20 @@ func RenderHCL(res Result) string {
 	for _, m := range res.Moves {
 		b.WriteString("\n")
 		fmt.Fprintf(&b, "# confidence %.2f", m.Confidence)
+		if len(m.Grouped) > 0 {
+			if len(m.Grouped) == 1 {
+				b.WriteString(" (1 resource pair)")
+			} else {
+				fmt.Fprintf(&b, " (lowest of %d resource pairs)", len(m.Grouped))
+			}
+			if strings.HasSuffix(m.From, "]") {
+				b.WriteString(" | whole module instance\n")
+			} else {
+				b.WriteString(" | whole module call, every instance moves with it\n")
+			}
+			writeBlock(&b, m)
+			continue
+		}
 		if len(m.Matched) > 0 {
 			fmt.Fprintf(&b, " | matched: %s", attrList(m.Matched))
 		}
@@ -38,12 +52,16 @@ func RenderHCL(res Result) string {
 			fmt.Fprintf(&b, " | differs: %s", attrList(m.Mismatched))
 		}
 		b.WriteString("\n")
-		b.WriteString("moved {\n")
-		fmt.Fprintf(&b, "  from = %s\n", m.From)
-		fmt.Fprintf(&b, "  to   = %s\n", m.To)
-		b.WriteString("}\n")
+		writeBlock(&b, m)
 	}
 	return b.String()
+}
+
+func writeBlock(b *strings.Builder, m Move) {
+	b.WriteString("moved {\n")
+	fmt.Fprintf(b, "  from = %s\n", m.From)
+	fmt.Fprintf(b, "  to   = %s\n", m.To)
+	b.WriteString("}\n")
 }
 
 // RenderSummary is the human report that goes to stderr: what was paired and,
@@ -59,6 +77,14 @@ func RenderSummary(res Result) string {
 	b.WriteString("\n")
 
 	for _, m := range res.Moves {
+		if len(m.Grouped) > 0 {
+			fmt.Fprintf(&b, "  module  %s -> %s (%.2f, %s)\n", m.From, m.To, m.Confidence,
+				plural(len(m.Grouped), "resource", "resources"))
+			for _, g := range m.Grouped {
+				fmt.Fprintf(&b, "    rename  %s -> %s (%.2f)\n", g.From, g.To, g.Confidence)
+			}
+			continue
+		}
 		fmt.Fprintf(&b, "  rename  %s -> %s (%.2f)\n", m.From, m.To, m.Confidence)
 	}
 	for _, d := range res.Unexplained {

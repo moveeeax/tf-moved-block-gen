@@ -65,9 +65,14 @@ type Options struct {
 	MinConfidence float64
 	SameNameOnly  bool
 	Ignore        []string
+	// NoCollapse keeps one moved block per resource even when a whole module
+	// call was renamed.
+	NoCollapse bool
 }
 
-// Move is one proposed moved block.
+// Move is one proposed moved block. A module-level block (Type "module")
+// moves a whole module call; its Confidence is the lowest among the resource
+// pairs it covers, listed in Grouped.
 type Move struct {
 	From       string   `json:"from"`
 	To         string   `json:"to"`
@@ -75,6 +80,7 @@ type Move struct {
 	Confidence float64  `json:"confidence"`
 	Matched    []string `json:"matched_attributes"`
 	Mismatched []string `json:"mismatched_attributes,omitempty"`
+	Grouped    []Move   `json:"grouped,omitempty"`
 }
 
 // Finding is a destroy (or replace) reported without a moved block.
@@ -161,6 +167,9 @@ func Analyze(p *tfplan.Plan, opt Options) Result {
 		res.Moves = append(res.Moves, c)
 	}
 	sort.Slice(res.Moves, func(i, j int) bool { return res.Moves[i].From < res.Moves[j].From })
+	if !opt.NoCollapse {
+		res.Moves = collapse(p.ResourceChanges, res.Moves)
+	}
 
 	createdTypes := map[string]int{}
 	for _, c := range creates {

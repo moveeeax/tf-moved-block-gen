@@ -48,10 +48,10 @@ moved {
   to   = aws_instance.api
 }
 
-# confidence 1.00 | matched: description, ingress, name, tags, vpc_id
+# confidence 1.00 (1 resource pair) | whole module call, every instance moves with it
 moved {
-  from = module.app.aws_security_group.lb
-  to   = module.edge.aws_security_group.lb
+  from = module.app
+  to   = module.edge
 }
 ```
 
@@ -60,7 +60,8 @@ The human report goes to stderr, so `> moved.tf` stays clean HCL:
 ```text
 2 moved blocks proposed, 1 destroy unexplained, 1 resource replaced in place
   rename  aws_instance.web -> aws_instance.api (0.85)
-  rename  module.app.aws_security_group.lb -> module.edge.aws_security_group.lb (1.00)
+  module  module.app -> module.edge (1.00, 1 resource)
+    rename  module.app.aws_security_group.lb -> module.edge.aws_security_group.lb (1.00)
   DESTROY aws_s3_bucket.legacy_logs (nothing of this type is created in this plan)
   replace aws_launch_template.workers
 ```
@@ -89,6 +90,7 @@ generated `moved.tf` into the configuration and the plan goes quiet.
 | `--fail-on-unexplained` | off | exit 1 when a destroy has no moved block |
 | `--ignore GLOB` | — | skip matching addresses; repeatable or comma-separated |
 | `--same-name-only` | off | only pair identical resource names, i.e. module moves |
+| `--no-collapse` | off | one `moved` block per resource, even when a whole module was renamed |
 
 Exit codes: `0` clean, `1` findings with `--fail-on-unexplained`, `2` a parse or
 usage error.
@@ -119,6 +121,18 @@ Pairs above `--min-confidence` are assigned greedily, best first, and no address
 is used twice. Ties break on the addresses, so the output is byte-identical
 across runs on the same plan — the committed `examples/moved.tf` is a golden
 file in CI.
+
+When a module was renamed, the pairs are then folded into one block for the
+module. If every resource under `module.app` moves to the same relative address
+under `module.edge` (same `count`/`for_each` key, same nested modules), and
+nothing else in either module is created, destroyed, updated or left unchanged,
+the output is a single `moved { from = module.app  to = module.edge }`, which
+covers every instance. Data sources under the new module do not count, since
+they are re-read anyway. When the call as a whole does not qualify, an instance
+(`module.app[0]`) or a nested call (`module.app.module.net`) that moved whole
+still collapses on its own. The comment above a module block gives the lowest
+confidence among the pairs it covers, and the stderr report lists each pair.
+`--no-collapse` turns this off.
 
 Every destroy left without a partner is reported as an unexplained destroy, with
 the reason: nothing of that type was created, or nothing scored high enough.

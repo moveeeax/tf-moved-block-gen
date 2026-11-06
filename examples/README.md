@@ -6,7 +6,7 @@ of everything the tool has to tell apart:
 | resource | plan action | what the tool should do |
 | --- | --- | --- |
 | `aws_instance.web` → `aws_instance.api` | delete + create | pair them, confidence 0.85 |
-| `module.app.aws_security_group.lb` → `module.edge...lb` | delete + create | pair them, confidence 1.00 |
+| `module.app.aws_security_group.lb` → `module.edge...lb` | delete + create | pair them, confidence 1.00, and collapse into `module.app` → `module.edge` |
 | `aws_s3_bucket.legacy_logs` | delete | report as an unexplained destroy |
 | `aws_launch_template.workers` | delete + create of the same address | report as a replacement, never a move |
 | `aws_vpc.main` | no-op | ignore |

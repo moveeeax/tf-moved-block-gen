@@ -7,8 +7,8 @@ moved {
   to   = aws_instance.api
 }
 
-# confidence 1.00 | matched: description, ingress, name, tags, vpc_id
+# confidence 1.00 (1 resource pair) | whole module call, every instance moves with it
 moved {
-  from = module.app.aws_security_group.lb
-  to   = module.edge.aws_security_group.lb
+  from = module.app
+  to   = module.edge
 }
