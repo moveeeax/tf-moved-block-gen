@@ -145,3 +145,17 @@ func TestVersionFlag(t *testing.T) {
 		t.Fatalf("unexpected --version behaviour: %d %q", code, out)
 	}
 }
+
+func TestNoCollapseFlag(t *testing.T) {
+	_, collapsed, _ := invoke(t, "", "--plan", examplePlan)
+	if !strings.Contains(collapsed, "from = module.app\n") {
+		t.Fatalf("default output should collapse the module rename:\n%s", collapsed)
+	}
+	code, out, _ := invoke(t, "", "--plan", examplePlan, "--no-collapse")
+	if code != exitOK {
+		t.Fatalf("want exit 0, got %d", code)
+	}
+	if !strings.Contains(out, "from = module.app.aws_security_group.lb\n") || strings.Contains(out, "from = module.app\n") {
+		t.Errorf("--no-collapse should keep the per-resource block:\n%s", out)
+	}
+}

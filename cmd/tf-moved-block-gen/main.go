@@ -53,6 +53,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		asJSON     = fs.Bool("json", false, "print the full report as JSON on stdout")
 		failUnexpl = fs.Bool("fail-on-unexplained", false, "exit 1 when a destroy has no moved block explaining it")
 		sameName   = fs.Bool("same-name-only", false, "only pair addresses whose resource name is identical (module moves)")
+		noCollapse = fs.Bool("no-collapse", false, "keep one moved block per resource instead of one per renamed module call")
 		showVer    = fs.Bool("version", false, "print the version and exit")
 		ignore     stringList
 	)
@@ -101,6 +102,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		MinConfidence: *minConf,
 		SameNameOnly:  *sameName,
 		Ignore:        ignore,
+		NoCollapse:    *noCollapse,
 	})
 
 	hcl := moved.RenderHCL(res)

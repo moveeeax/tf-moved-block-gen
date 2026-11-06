@@ -45,6 +45,11 @@ jobs:
           ./tf-moved-block-gen --plan examples/plan.json > /tmp/moved.tf
           diff -u examples/moved.tf /tmp/moved.tf
 
+      - name: --no-collapse keeps one block per resource
+        run: |
+          ./tf-moved-block-gen --plan examples/plan.json --no-collapse > /tmp/flat.tf
+          grep -q 'from = module.app.aws_security_group.lb' /tmp/flat.tf
+
       - name: unexplained destroy fails the gate
         run: |
           set +e

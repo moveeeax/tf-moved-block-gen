@@ -66,7 +66,7 @@ func TestRenameProducesExactlyOneMovedBlock(t *testing.T) {
 }
 
 func TestModuleMoveKeepsFullAddresses(t *testing.T) {
-	res := analyze(t, "module_move.json", defaults())
+	res := analyze(t, "module_move.json", Options{MinConfidence: 0.6, NoCollapse: true})
 
 	if len(res.Moves) != 1 {
 		t.Fatalf("want 1 moved block, got %d", len(res.Moves))
@@ -203,7 +203,7 @@ func TestSameNameOnlyDropsRenames(t *testing.T) {
 	if len(res.Moves) != 1 {
 		t.Fatalf("want only the module move, got %+v", res.Moves)
 	}
-	if res.Moves[0].From != "module.app.aws_security_group.lb" {
+	if res.Moves[0].From != "module.app" || len(res.Moves[0].Grouped) != 1 {
 		t.Errorf("unexpected move %s -> %s", res.Moves[0].From, res.Moves[0].To)
 	}
 }
